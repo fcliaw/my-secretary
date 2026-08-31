@@ -85,10 +85,14 @@ only when actually implemented **and** tested — see TEST_PLAN.md.
       into one). Revisit once all features are done — see PROJECT_STATUS.md.
 
 ## Stage 10 — Deployment
-- [ ] Apps Script deployed as Web App
-- [ ] Frontend deployed/hosted
-- [ ] Production Google OAuth config confirmed
-- [ ] Production smoke test (login → add item → see on Dashboard)
+- [x] Apps Script deployed as Web App — Execute as Me, Anyone (ADR-008/009)
+- [x] Frontend deployed/hosted — GitHub Pages, `docs/` folder, main branch:
+      https://fcliaw.github.io/my-secretary/
+- [x] Production Google OAuth config confirmed — GitHub Pages origin added
+      to Authorized JavaScript origins
+- [x] Production smoke test — verified live on the real production URL
+      (not localhost): login succeeded, real reminder data loaded,
+      correctly grouped into Overdue/Due Soon/Upcoming
 
 ## Testing (run alongside each stage, per TEST_PLAN.md)
 - [ ] Authentication tests

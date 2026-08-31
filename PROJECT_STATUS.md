@@ -1,7 +1,8 @@
-Project Status: In Development
+Project Status: Live (Phase 1 complete)
 
 Current Phase:
-Phase 1 — Stages 1-8 complete and verified
+Phase 1 — all 10 stages complete and verified. Live at
+https://fcliaw.github.io/my-secretary/
 
 Completed:
 - ROADMAP.md
@@ -17,25 +18,32 @@ Completed:
 - DECISIONS.md
 - DEVELOPMENT_CHECKLIST.md
 - Stage 1 — Project Setup
-- Stage 2 — Google Authentication (real end-to-end test passed)
-- Stage 3 — Google Sheet Initialization (real end-to-end test passed)
-- Stage 4 — Apps Script API (create/delete/renew/update all verified live)
+- Stage 2 — Google Authentication
+- Stage 3 — Google Sheet Initialization
+- Stage 4 — Apps Script API
 - Stage 5 — Frontend Shell
 - Stage 6 — Dashboard
-- Stage 7 — CRUD Functions: Add, Edit, Delete, Renew, Mark as Done all
-  built and verified live. Standalone List/Detail pages intentionally
-  dropped in favor of inline actions on the Dashboard (ADR-012).
-- Stage 8 — Security Hardening: code review against SECURITY.md found no
-  issues (identity always re-verified server-side, no path trusts
-  frontend-supplied identity/Sheet ID); live test confirmed a forged
-  token is rejected with AUTH_REQUIRED before touching any Sheet data.
+- Stage 7 — CRUD Functions (Add, Edit, Delete, Renew, Mark as Done)
+- Stage 8 — Security Hardening
+- Stage 9 — Search / Filter (Settings page content still TBD, deferred)
+- Stage 10 — Deployment: Apps Script Web App + frontend on GitHub Pages
+  (`docs/` folder), production login verified live
 
-Known minor issue (not blocking): browser console shows a
-`[GSI_LOGGER] origin not allowed for client ID` warning during login.
-Login itself works and has been verified repeatedly, so this is cosmetic
-for now — worth revisiting when moving off localhost to a real domain
-(Stage 10), since the real deployment URL will need to be added to
-Authorized JavaScript origins in Google Cloud Console regardless.
+Repository: https://github.com/fcliaw/my-secretary (public — see
+DECISIONS.md for why public code doesn't weaken security here)
 
-Next:
-- Stage 9 — Search / Filter / Settings
+Known open items (not blockers):
+- Settings page has no content yet (scope still TBD)
+- Login/refresh performance — noticeably slow (~5s even after ADR-014's
+  round-trip merge); project owner deferred deeper tuning to later
+- GSI_LOGGER "origin not allowed" console warning seen during earlier
+  localhost testing — should now be resolved since the production origin
+  was added to Google Cloud Console; re-check on next login test
+
+Next (optional, not required for Phase 1 to be "done"):
+- Decide Settings page scope, or leave deferred indefinitely
+- Performance tuning pass
+- Phase 2 (ROADMAP.md): active notifications
+- Phase 3 (ROADMAP.md): possible Firebase migration
+- ADR-011 revisit: per-user Drive-owned Sheets, only if opened to a
+  second real user
