@@ -27,11 +27,13 @@ function handleRequest(request) {
         // round trip (ADR-014), so login doesn't need a second request.
         var spreadsheet = getOrCreateUserSpreadsheet(email);
         var records = readAllReminderRows(spreadsheet).map(toApiRecord);
-        var categories = getCategories(spreadsheet);
-        var emailNotificationsEnabled = getEmailNotificationsEnabled(spreadsheet);
+        // One Settings-sheet read instead of two (getCategories +
+        // getEmailNotificationsEnabled separately) — see SettingsService.gs.
+        var settingsSnapshot = getSettingsSnapshot(spreadsheet);
         return jsonResponse(successResponse({
-          email: email, sheetId: spreadsheet.getId(), records: records, categories: categories,
-          emailNotificationsEnabled: emailNotificationsEnabled,
+          email: email, sheetId: spreadsheet.getId(), records: records,
+          categories: settingsSnapshot.categories,
+          emailNotificationsEnabled: settingsSnapshot.emailNotificationsEnabled,
         }));
 
       case "getRecords":

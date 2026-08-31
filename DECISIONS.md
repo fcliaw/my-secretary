@@ -330,3 +330,21 @@ building.
 `Done` items unfiltered); new `docs/js/report.js` and a wide modal in
 `index.html`/`style.css`. "This month" is filtered client-side from all
 logs (personal-scale row counts, no need for a server-side date filter).
+
+### ADR-024
+**Decision:** Rename the Dashboard/Report display bucket labeled "This
+Month" (ADR-015 — 15-30 days from today, a rolling window) to "Within 30
+Days". The internal code name stays `ThisMonth` (`Api.gs`/`dashboard.js`
+`computeDisplayStatus`, `GROUP_KEYS`) — only the user-facing label
+changed, since the underlying 15-30-day rule (ADR-015) isn't changing.
+**Reason:**
+Project owner found an item due 15 days out, in the next calendar month,
+sitting in "This Month" — a real bucket-boundary case that exposed the
+label as misleading: it reads as "the current calendar month" but is
+actually a rolling day-count window, unrelated to calendar-month
+boundaries. Renaming the visible label (not the bucket rule) removes the
+confusion cheaply and doesn't touch ADR-015's math. Report's unrelated
+"This Month's Activity" (the real calendar-month log filter) keeps its
+name — it genuinely means the calendar month.
+**Impact:** `index.html`, `docs/js/report.js`, `UI_STRUCTURE.md` — label
+text only, no logic change.

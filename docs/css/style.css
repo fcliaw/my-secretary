@@ -45,7 +45,9 @@ body {
   border-radius: var(--radius);
   border: none;
   cursor: pointer;
+  transition: transform 0.08s ease, filter 0.08s ease;
 }
+.btn:active { transform: scale(0.96); filter: brightness(0.92); }
 .btn-primary { background: var(--color-primary); color: #fff; width: 100%; }
 .btn-link { background: none; color: var(--color-muted); }
 .btn-fab {

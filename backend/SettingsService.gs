@@ -50,3 +50,34 @@ function actionSetEmailPreference(token, payload) {
   setSetting(ctx.spreadsheet, SETTINGS_KEYS.EMAIL_NOTIFICATIONS, enabled);
   return successResponse({ enabled: enabled });
 }
+
+/**
+ * Performance: authStatus needs both the category list and the email
+ * preference, which otherwise means 2 separate reads of the same
+ * Settings sheet (getCategories + getEmailNotificationsEnabled). This
+ * reads it once and derives both from that single call.
+ */
+function getSettingsSnapshot(spreadsheet) {
+  var sheet = categoriesSheet(spreadsheet);
+  var lastRow = sheet.getLastRow();
+
+  if (lastRow < 2) {
+    // Empty Settings tab (new Sheet or pre-Settings-feature Sheet) —
+    // getCategories() already knows how to back-fill defaults.
+    return { categories: getCategories(spreadsheet), emailNotificationsEnabled: true };
+  }
+
+  var data = sheet.getRange(2, 1, lastRow - 1, 4).getValues();
+
+  var categories = [];
+  var emailValue;
+  data.forEach(function (row) {
+    if (row[0] !== "") categories.push(row[0]);
+    if (row[2] === SETTINGS_KEYS.EMAIL_NOTIFICATIONS) emailValue = row[3];
+  });
+
+  return {
+    categories: categories,
+    emailNotificationsEnabled: emailValue === true || emailValue === "true" || emailValue === undefined || emailValue === "",
+  };
+}

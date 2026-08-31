@@ -14,7 +14,7 @@ const Report = (() => {
 
   const STATUS_LABELS = {
     Overdue: "Overdue", Today: "Today", ThisWeek: "This Week",
-    NextWeek: "Next Week", ThisMonth: "This Month", Later: "Later",
+    NextWeek: "Next Week", ThisMonth: "Within 30 Days", Later: "Later",
   };
 
   function renderCategoryFilterOptions() {
