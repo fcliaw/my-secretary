@@ -20,6 +20,12 @@ var REMINDER_HEADERS = [
 
 var LOG_HEADERS = ["Timestamp", "Action", "ItemID", "Result"];
 
+// Seeded on first Sheet creation, then fully user-editable (Stage 9 —
+// Settings category management, ADR-019). Kept as the exact strings
+// already used by existing test data (no spaces) so pre-existing
+// ReminderItems rows stay valid without a migration.
+var DEFAULT_CATEGORIES = ["FixedDeposit", "SchoolFee", "Insurance", "License", "Subscription", "Other"];
+
 function sheetPropertyKey(email) {
   return "SHEET_ID_" + email;
 }
@@ -55,7 +61,10 @@ function initializeSpreadsheetStructure(spreadsheet) {
   reminders.setFrozenRows(1);
 
   var settings = spreadsheet.insertSheet(SHEET_NAMES.SETTINGS);
-  // No confirmed Settings columns yet (see DATA_STRUCTURE.md) — placeholder tab only.
+  settings.getRange(1, 1).setValue("Category");
+  settings.getRange(2, 1, DEFAULT_CATEGORIES.length, 1)
+    .setValues(DEFAULT_CATEGORIES.map(function (c) { return [c]; }));
+  settings.setFrozenRows(1);
 
   var logs = spreadsheet.insertSheet(SHEET_NAMES.LOGS);
   logs.getRange(1, 1, 1, LOG_HEADERS.length).setValues([LOG_HEADERS]);

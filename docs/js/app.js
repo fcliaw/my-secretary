@@ -30,6 +30,7 @@ async function handleSignIn() {
 
   if (result.success) {
     showView("dashboard");
+    Dashboard.setCategories(result.data.categories);
     Dashboard.setRecords(result.data.records);
   } else {
     Auth.signOut();
@@ -138,7 +139,7 @@ const Forms = (() => {
 // --- Import from CSV ---
 
 document.getElementById("btn-download-template").addEventListener("click", () => {
-  ImportExport.downloadTemplate();
+  ImportExport.downloadTemplate(Dashboard.getCategories());
 });
 
 document.getElementById("input-import-file").addEventListener("change", async (e) => {
@@ -151,7 +152,7 @@ document.getElementById("input-import-file").addEventListener("change", async (e
   statusEl.textContent = "Importing...";
 
   const text = await ImportExport.readFileAsText(file);
-  const { rows, errors: parseErrors } = ImportExport.parseCsv(text);
+  const { rows, errors: parseErrors } = ImportExport.parseCsv(text, Dashboard.getCategories());
 
   if (rows.length === 0) {
     statusEl.className = "import-status import-error";

@@ -14,7 +14,33 @@ const Dashboard = (() => {
   const categorySelect = document.getElementById("filter-category");
 
   let allRecords = []; // last loaded from the server, unfiltered
+  let allCategories = []; // last loaded from the server (Settings sheet) — ADR-019
   let amountsVisible = false; // masked by default on every load — privacy (see item 5)
+
+  // Category <select> elements are populated from the server's live list
+  // (not hardcoded <option>s) so Settings changes (ADR-019) show up
+  // everywhere without a page reload.
+  function renderCategoryOptions() {
+    const filterSelect = document.getElementById("filter-category");
+    const formSelect = document.getElementById("field-category");
+    const previousFilterValue = filterSelect.value;
+    const previousFormValue = formSelect.value;
+
+    filterSelect.innerHTML = '<option value="">All categories</option>';
+    formSelect.innerHTML = "";
+    allCategories.forEach((cat) => {
+      filterSelect.appendChild(new Option(cat, cat));
+      formSelect.appendChild(new Option(cat, cat));
+    });
+
+    if (allCategories.includes(previousFilterValue)) filterSelect.value = previousFilterValue;
+    if (allCategories.includes(previousFormValue)) formSelect.value = previousFormValue;
+  }
+
+  function setCategories(categories) {
+    allCategories = categories || [];
+    renderCategoryOptions();
+  }
 
   // Must match backend Api.gs computeDisplayStatus (see ADR-013 for why
   // this is duplicated, and ADR-015 for why these particular buckets).
@@ -274,5 +300,8 @@ const Dashboard = (() => {
   searchInput.addEventListener("input", applyFiltersAndRender);
   categorySelect.addEventListener("change", applyFiltersAndRender);
 
-  return { load, setRecords, upsertLocal, removeLocal, computeDisplayStatus, createMany };
+  return {
+    load, setRecords, upsertLocal, removeLocal, computeDisplayStatus, createMany,
+    setCategories, getCategories: () => allCategories.slice(),
+  };
 })();

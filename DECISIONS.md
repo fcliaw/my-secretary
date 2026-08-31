@@ -231,3 +231,34 @@ existing detailed cards — confirmed via AskUserQuestion before building.
 **Impact:** `index.html` (`#stat-tiles`), `style.css` (`.stat-tile` +
 per-bucket colors), `dashboard.js` (`updateStatTiles`, called from
 `applyFiltersAndRender` using the unfiltered active list).
+
+### ADR-019
+**Decision:** Category stops being a fixed, hardcoded set
+(`FixedDeposit`/`SchoolFee`/.../`Other`) and becomes a user-editable list
+stored in the `Settings` sheet — add / rename / delete, all through a new
+Settings screen. **Both rename and delete are blocked if any reminder
+still uses that category** — an early version tried to bulk-update
+existing reminders' `Category` cell on rename, but the frontend's already
+-loaded Dashboard data wasn't kept in sync with that change, so a renamed
+category's reminders appeared to go blank until the next full reload;
+blocking rename entirely when in use (matching delete's existing rule) is
+simpler and has no such sync hazard. Defaults are seeded on first Sheet creation using the exact same strings
+already hardcoded before (no spaces — `FixedDeposit`, not
+`Fixed Deposit`) so existing test data stays valid without a migration.
+Sheets created before this feature (empty `Settings` tab) get the
+defaults back-filled the first time `getCategories` runs.
+**Reason:**
+Project owner wants to track categories beyond the original 6 (e.g.
+insurance sub-types, car loan, etc.) without needing a code change each
+time — this was explicit user-facing scope from the start (ADR-004
+already designed the *data model* to be category-agnostic; this ADR makes
+the *category list itself* user-editable, closing that loop).
+**Impact:** New `backend/CategoryService.gs`
+(getCategories/addCategory/renameCategory/deleteCategory);
+`Api.gs.validateReminderInput` now takes `spreadsheet` and reads the
+dynamic list instead of a hardcoded `VALID_CATEGORIES` array; `Code.gs`
+wires 4 new actions and `authStatus` also returns `categories`;
+`DATA_STRUCTURE.md`/`API.md` updated. Frontend: category `<select>`
+elements (Add/Edit form, filter, CSV import) are now populated from the
+server's live list instead of hardcoded `<option>`s — see follow-up
+frontend commit.

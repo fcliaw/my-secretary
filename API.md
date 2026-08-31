@@ -23,12 +23,16 @@ The identity token is required on every action.
 
 | Action | Method | Purpose | Authentication |
 |---|---|---|---|
-| authStatus | POST | Check identity, resolve/create the user's Sheet, and return the reminder list in the same response (ADR-014) | Yes |
+| authStatus | POST | Check identity, resolve/create the user's Sheet, and return the reminder list + category list in the same response (ADR-014) | Yes |
 | getRecords | POST | Get the authenticated user's reminder items | Yes |
 | createRecord | POST | Create a reminder item | Yes |
 | updateRecord | POST | Update a reminder item | Yes |
 | deleteRecord | POST | Delete a reminder item | Yes |
 | renewRecord | POST | Mark an item renewed, advance DueDate (FR-008) | Yes |
+| getCategories | POST | Get the user's current category list | Yes |
+| addCategory | POST | Add a new category | Yes |
+| renameCategory | POST | Rename a category (blocked if any reminder still uses it) | Yes |
+| deleteCategory | POST | Delete a category (blocked if any reminder still uses it) | Yes |
 
 Every action requires authentication — there is no public/anonymous
 action in this app.
@@ -73,6 +77,25 @@ action in this app.
 **renewRecord**
 ```json
 { "action": "renewRecord", "token": "...", "payload": { "id": "..." } }
+```
+
+**addCategory**
+```json
+{ "action": "addCategory", "token": "...", "payload": { "name": "Car Loan" } }
+```
+
+**renameCategory**
+```json
+{
+  "action": "renameCategory",
+  "token": "...",
+  "payload": { "oldName": "Car Loan", "newName": "Vehicle Loan" }
+}
+```
+
+**deleteCategory**
+```json
+{ "action": "deleteCategory", "token": "...", "payload": { "name": "Car Loan" } }
 ```
 
 ## 5.4 Response Format

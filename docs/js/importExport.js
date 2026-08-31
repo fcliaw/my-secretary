@@ -1,41 +1,21 @@
 // My Secretary — CSV template download + import (item 3)
 // No external library — CSV is simple enough to parse/generate by hand,
 // and both Excel and Google Sheets open/save CSV natively.
+//
+// Category is now a user-editable list (ADR-019), not a fixed set — the
+// template and parser both work off whatever categories the caller
+// currently has (passed in), not a hardcoded dictionary.
 
 const ImportExport = (() => {
   const CSV_HEADERS = ["Category", "Title", "DueDate (YYYY-MM-DD)", "RecurrenceInterval", "Amount", "Notes"];
 
-  // One example row per valid Category, each demonstrating a different
-  // valid RecurrenceInterval — this teaches the allowed values through
-  // real, importable example data instead of header text (which gets cut
-  // off by column width) or separate comment rows (which confused
-  // Excel's delimiter auto-detection when opened by double-click).
-  const EXAMPLE_ROWS = [
-    ["Fixed Deposit", "Maybank FD - Emma", "2026-09-15", "Yearly", "10000", ""],
-    ["School Fee", "School Fee - Emma", "2026-09-15", "One-off", "500", ""],
-    ["Insurance", "Car Insurance", "2026-09-15", "Yearly", "1200", ""],
-    ["License", "Driving License Renewal", "2026-09-15", "Quarterly", "", ""],
-    ["Subscription", "Netflix", "2026-09-15", "Monthly", "45", ""],
-    ["Other", "Gym Membership", "2026-09-15", "One-off", "", ""],
-  ];
-
-  // Full readable labels the user actually types/sees — matches the
-  // wording already used in the Add Reminder dropdowns, so there's only
-  // one vocabulary to remember. Maps to the internal codes Api.gs expects.
-  const CATEGORY_LABELS = {
-    "Fixed Deposit": "FixedDeposit",
-    "School Fee": "SchoolFee",
-    "Insurance": "Insurance",
-    "License": "License",
-    "Subscription": "Subscription",
-    "Other": "Other",
-  };
   const RECURRENCE_LABELS = {
     "One-off": "None",
     "Monthly": "Monthly",
     "Quarterly": "Quarterly",
     "Yearly": "Yearly",
   };
+  const RECURRENCE_EXAMPLES = ["Yearly", "One-off", "Monthly", "Quarterly"];
 
   // Lenient on purpose: strips spaces/hyphens/underscores and lowercases,
   // so "FixedDeposit", "Fixed Deposit", "fixed-deposit" all match — users
@@ -44,9 +24,8 @@ const ImportExport = (() => {
     return (label || "").trim().toLowerCase().replace(/[\s\-_]/g, "");
   }
 
-  function labelToCategory(label) {
-    const found = Object.keys(CATEGORY_LABELS).find((k) => normalize(k) === normalize(label));
-    return found ? CATEGORY_LABELS[found] : null;
+  function labelToCategory(label, validCategories) {
+    return validCategories.find((c) => normalize(c) === normalize(label)) || null;
   }
 
   function labelToRecurrence(label) {
@@ -54,8 +33,20 @@ const ImportExport = (() => {
     return found ? RECURRENCE_LABELS[found] : null;
   }
 
-  function downloadTemplate() {
-    const lines = [CSV_HEADERS.join(","), ...EXAMPLE_ROWS.map((row) => row.join(","))];
+  // One example row per current category, cycling through the recurrence
+  // options so the template also demonstrates those values — real,
+  // directly-importable rows instead of separate instruction rows (which
+  // confused Excel's delimiter auto-detection when opened by double-click).
+  function downloadTemplate(categories) {
+    const exampleRows = categories.map((cat, i) => [
+      cat,
+      `${cat} example`,
+      "2026-09-15",
+      RECURRENCE_EXAMPLES[i % RECURRENCE_EXAMPLES.length],
+      "",
+      "",
+    ]);
+    const lines = [CSV_HEADERS.join(","), ...exampleRows.map((row) => row.join(","))];
     const csv = lines.join("\r\n");
 
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
@@ -100,7 +91,7 @@ const ImportExport = (() => {
     return fields.map((f) => f.trim());
   }
 
-  function parseCsv(text) {
+  function parseCsv(text, validCategories) {
     const lines = text.split(/\r\n|\n|\r/).filter((l) => l.trim() !== "");
     if (lines.length < 2) return { rows: [], errors: ["File has no data rows."] };
 
@@ -112,9 +103,9 @@ const ImportExport = (() => {
       const [categoryLabel, title, dueDate, recurrenceLabel, amount, notes] = fields;
       const rowNum = i + 1; // 1-indexed, includes header
 
-      const category = labelToCategory(categoryLabel);
+      const category = labelToCategory(categoryLabel, validCategories);
       if (!category) {
-        errors.push(`Row ${rowNum}: unknown category "${categoryLabel}" (see instructions in the template)`);
+        errors.push(`Row ${rowNum}: unknown category "${categoryLabel}" — check Settings for the current list`);
         continue;
       }
       if (!title || title.trim() === "") {
@@ -127,7 +118,7 @@ const ImportExport = (() => {
       }
       const recurrence = recurrenceLabel ? labelToRecurrence(recurrenceLabel) : "None";
       if (recurrenceLabel && !recurrence) {
-        errors.push(`Row ${rowNum}: unknown repeat value "${recurrenceLabel}" (see instructions in the template)`);
+        errors.push(`Row ${rowNum}: unknown repeat value "${recurrenceLabel}" (One-off/Monthly/Quarterly/Yearly)`);
         continue;
       }
       const amountValue = amount === "" || amount === undefined ? null : Number(amount);

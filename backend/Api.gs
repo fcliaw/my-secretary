@@ -3,9 +3,6 @@
  * See API.md for the request/response contract.
  */
 
-var VALID_CATEGORIES = [
-  "FixedDeposit", "SchoolFee", "Insurance", "License", "Subscription", "Other",
-];
 var VALID_RECURRENCE = ["None", "Monthly", "Quarterly", "Yearly"];
 
 function apiError(code, message) {
@@ -85,12 +82,13 @@ function toApiRecord(row) {
   };
 }
 
-function validateReminderInput(payload, isUpdate) {
+function validateReminderInput(spreadsheet, payload, isUpdate) {
   var errors = [];
 
   if (!isUpdate || payload.category !== undefined) {
-    if (VALID_CATEGORIES.indexOf(payload.category) === -1) {
-      errors.push("category must be one of: " + VALID_CATEGORIES.join(", "));
+    var validCategories = getCategories(spreadsheet);
+    if (validCategories.indexOf(payload.category) === -1) {
+      errors.push("category must be one of: " + validCategories.join(", "));
     }
   }
   if (!isUpdate || payload.title !== undefined) {
@@ -129,7 +127,7 @@ function actionGetRecords(token) {
 
 function actionCreateRecord(token, payload) {
   var ctx = resolveUserContext(token);
-  validateReminderInput(payload, false);
+  validateReminderInput(ctx.spreadsheet, payload, false);
 
   var id = Utilities.getUuid();
   var now = new Date();
@@ -163,7 +161,7 @@ function actionUpdateRecord(token, payload) {
     apiError("NOT_FOUND", "Reminder not found.");
   }
 
-  validateReminderInput(payload, true);
+  validateReminderInput(ctx.spreadsheet, payload, true);
 
   var sheet = remindersSheet(ctx.spreadsheet);
   var updates = {

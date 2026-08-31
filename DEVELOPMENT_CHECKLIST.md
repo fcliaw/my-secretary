@@ -82,7 +82,8 @@ only when actually implemented **and** tested — see TEST_PLAN.md.
 ## Stage 9 — Search / Filter / Settings
 - [x] Search by title and notes — verified live
 - [x] Filter by category — verified live
-- [ ] Settings page (scope still `TBD`)
+- [x] Settings page — category management (add/rename/delete, ADR-019),
+      verified live including the in-use guard on rename/delete
 - [ ] **Performance tuning deferred to the end of Phase 1** — login/refresh
       still feels slow (~5s even after ADR-014 merged the two round trips
       into one). Revisit once all features are done — see PROJECT_STATUS.md.

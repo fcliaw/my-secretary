@@ -29,7 +29,7 @@ future categories can be added later without a schema change.
 | Column | Type | Required | Description |
 |---|---|---|---|
 | ID | String | Yes | Unique record ID (e.g. UUID) |
-| Category | String | Yes | `FixedDeposit`, `SchoolFee`, `Insurance`, `License`, `Subscription`, `Other` — see 4.2 |
+| Category | String | Yes | Must match one of the user's current categories (the `Settings` sheet — see 4.1, ADR-019) |
 | Title | String | Yes | User-facing name, e.g. "Maybank FD - Emma" |
 | DueDate | Date | Yes | Next date this item needs action |
 | RecurrenceInterval | String | No | e.g. `Monthly`, `Yearly`, `None` — used by "Mark as Renewed" (FR-008) |
@@ -43,10 +43,18 @@ Additional fields beyond this are `TBD` — not invented ahead of real need.
 
 ### Sheet: `Settings`
 
-**Purpose:** per-user app preferences.
+**Purpose:** per-user app preferences. Currently holds the user's
+editable Category list (ADR-019).
 
-Content: `TBD` (no confirmed settings yet — placeholder tab created at
-Sheet-initialization time so the structure exists when needed).
+| Column | Type | Required | Description |
+|---|---|---|---|
+| Category | String | Yes | One category name per row. Seeded with 6
+defaults on Sheet creation (`FixedDeposit`, `SchoolFee`, `Insurance`,
+`License`, `Subscription`, `Other`), user-editable afterward via Settings
+(add/rename/delete) — rename and delete are both blocked while any
+reminder still uses that category. |
+
+Other settings beyond Category are `TBD`.
 
 ### Sheet: `Logs`
 
@@ -80,10 +88,10 @@ for troubleshooting — not a full audit system.
   `DueDate` and the display recalculates from there.
 - **Duplicate handling:** no automatic duplicate detection in Phase 1 —
   the user is responsible for not entering the same item twice.
-- **Validation:** `DueDate` must be a valid date; `Category` must be one of
-  the recognized values (see 4.1 — `FixedDeposit`, `SchoolFee`,
-  `Insurance`, `License`, `Subscription`, `Other`); `Amount`, if present,
-  must be numeric and non-negative.
+- **Validation:** `DueDate` must be a valid date; `Category` must be one
+  of the user's current category list (the `Settings` sheet — dynamic,
+  see 4.1 and ADR-019, not a fixed set); `Amount`, if present, must be
+  numeric and non-negative.
 
 ## 4.3 User Data Isolation
 

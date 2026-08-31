@@ -27,7 +27,10 @@ function handleRequest(request) {
         // round trip (ADR-014), so login doesn't need a second request.
         var spreadsheet = getOrCreateUserSpreadsheet(email);
         var records = readAllReminderRows(spreadsheet).map(toApiRecord);
-        return jsonResponse(successResponse({ email: email, sheetId: spreadsheet.getId(), records: records }));
+        var categories = getCategories(spreadsheet);
+        return jsonResponse(successResponse({
+          email: email, sheetId: spreadsheet.getId(), records: records, categories: categories,
+        }));
 
       case "getRecords":
         return jsonResponse(actionGetRecords(request.token));
@@ -43,6 +46,18 @@ function handleRequest(request) {
 
       case "renewRecord":
         return jsonResponse(actionRenewRecord(request.token, request.payload || {}));
+
+      case "getCategories":
+        return jsonResponse(actionGetCategories(request.token));
+
+      case "addCategory":
+        return jsonResponse(actionAddCategory(request.token, request.payload || {}));
+
+      case "renameCategory":
+        return jsonResponse(actionRenameCategory(request.token, request.payload || {}));
+
+      case "deleteCategory":
+        return jsonResponse(actionDeleteCategory(request.token, request.payload || {}));
 
       default:
         return jsonResponse(errorResponse("INVALID_REQUEST", "Unknown action: " + action));
