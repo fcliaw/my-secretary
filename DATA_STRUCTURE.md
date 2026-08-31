@@ -43,8 +43,10 @@ Additional fields beyond this are `TBD` — not invented ahead of real need.
 
 ### Sheet: `Settings`
 
-**Purpose:** per-user app preferences. Currently holds the user's
-editable Category list (ADR-019).
+**Purpose:** per-user app preferences. Two independent areas, columns A/B
+and C/D, so the Category list and simple key/value settings don't collide.
+
+**Columns A/B — Category list** (ADR-019):
 
 | Column | Type | Required | Description |
 |---|---|---|---|
@@ -54,7 +56,15 @@ defaults on Sheet creation (`FixedDeposit`, `SchoolFee`, `Insurance`,
 (add/rename/delete) — rename and delete are both blocked while any
 reminder still uses that category. |
 
-Other settings beyond Category are `TBD`.
+**Columns C/D — key/value settings** (ADR-022):
+
+| Column | Type | Required | Description |
+|---|---|---|---|
+| Setting | String | — | Setting key, e.g. `EmailNotifications` |
+| Value | Boolean/String | — | Its value, e.g. `true`/`false` |
+
+Currently the only key is `EmailNotifications` (default `true` if not
+present — see ADR-022). Other settings beyond this are `TBD`.
 
 ### Sheet: `Logs`
 

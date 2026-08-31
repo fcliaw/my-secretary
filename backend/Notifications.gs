@@ -30,6 +30,8 @@ function sendDueReminderEmails() {
 }
 
 function sendDueReminderEmailForUser(email, spreadsheet) {
+  if (!getEmailNotificationsEnabled(spreadsheet)) return;
+
   var rows = readAllReminderRows(spreadsheet)
     .filter(function (r) { return !r.IsDone; })
     .map(toApiRecord)

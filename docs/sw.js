@@ -3,7 +3,7 @@
 // cached Dashboard) with no signal. Live data (Google login, Sheet reads/
 // writes) always needs a real network call — this never caches those.
 
-const CACHE_NAME = "my-secretary-shell-v1";
+const CACHE_NAME = "my-secretary-shell-v2";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -14,6 +14,7 @@ const APP_SHELL = [
   "./js/dashboard.js",
   "./js/importExport.js",
   "./js/settings.js",
+  "./js/report.js",
   "./js/app.js",
   "./manifest.json",
   "./icons/icon-192.png",

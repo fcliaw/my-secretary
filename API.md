@@ -23,7 +23,7 @@ The identity token is required on every action.
 
 | Action | Method | Purpose | Authentication |
 |---|---|---|---|
-| authStatus | POST | Check identity, resolve/create the user's Sheet, and return the reminder list + category list in the same response (ADR-014) | Yes |
+| authStatus | POST | Check identity, resolve/create the user's Sheet, and return the reminder list + category list + email preference in the same response (ADR-014) | Yes |
 | getRecords | POST | Get the authenticated user's reminder items | Yes |
 | createRecord | POST | Create a reminder item | Yes |
 | updateRecord | POST | Update a reminder item | Yes |
@@ -33,6 +33,8 @@ The identity token is required on every action.
 | addCategory | POST | Add a new category | Yes |
 | renameCategory | POST | Rename a category (blocked if any reminder still uses it) | Yes |
 | deleteCategory | POST | Delete a category (blocked if any reminder still uses it) | Yes |
+| getLogs | POST | Get the user's write-action history (Logs sheet), newest first | Yes |
+| setEmailPreference | POST | Turn daily email reminders on/off | Yes |
 
 Every action requires authentication — there is no public/anonymous
 action in this app.

@@ -30,6 +30,7 @@
         <h1>My Secretary</h1>
         <div class="topbar-actions">
           <button id="btn-toggle-amounts" class="btn btn-icon" title="Show amounts" aria-label="Show amounts">🙈</button>
+          <button id="btn-report" class="btn btn-icon" title="Report" aria-label="Report">📊</button>
           <button id="btn-settings" class="btn btn-icon" title="Settings" aria-label="Settings">⚙️</button>
           <button id="btn-logout" class="btn btn-link">Logout</button>
         </div>
@@ -119,6 +120,47 @@
       <button id="btn-add" class="btn btn-fab" hidden>+ Add Reminder</button>
     </section>
 
+    <!-- Report: full reminder list + this month's activity -->
+    <div id="view-report" class="modal-overlay" hidden>
+      <div class="modal-box modal-box-wide">
+        <h2>Report</h2>
+        <div class="report-loading state-loading" id="report-loading">Loading...</div>
+
+        <div id="report-content" hidden>
+          <h3 class="settings-subheading">All Reminders</h3>
+          <div class="report-filters">
+            <input id="report-search" type="text" placeholder="Search by title, category, or notes..." class="report-filter" />
+            <select id="report-category-filter" class="report-filter">
+              <option value="">All categories</option>
+            </select>
+          </div>
+          <div class="report-table-wrap">
+            <table class="report-table" id="report-reminders-table">
+              <thead>
+                <tr><th>Title</th><th>Category</th><th>Due Date</th><th>Status</th><th></th></tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+          <h3 class="settings-subheading">This Month's Activity</h3>
+          <div class="report-table-wrap">
+            <table class="report-table" id="report-logs-table">
+              <thead>
+                <tr><th>When</th><th>Action</th><th>Item</th><th>Result</th></tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <p id="report-logs-empty" class="state-empty" hidden>No activity this month yet.</p>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" id="btn-close-report" class="btn btn-link">Close</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Settings: manage categories (ADR-019) -->
     <div id="view-settings" class="modal-overlay" hidden>
       <div class="modal-box">
@@ -131,6 +173,12 @@
           <button type="submit" class="btn btn-small">Add</button>
         </form>
         <p id="settings-error" class="error-text" hidden></p>
+
+        <h3 class="settings-subheading">Notifications</h3>
+        <label class="settings-checkbox-row">
+          <input type="checkbox" id="field-email-notifications" />
+          Email me when something is overdue or due today
+        </label>
 
         <div class="modal-actions">
           <button type="button" id="btn-close-settings" class="btn btn-link">Close</button>
@@ -195,6 +243,7 @@
   <script src="js/dashboard.js"></script>
   <script src="js/importExport.js"></script>
   <script src="js/settings.js"></script>
+  <script src="js/report.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

@@ -32,6 +32,7 @@ async function handleSignIn() {
     showView("dashboard");
     Dashboard.setCategories(result.data.categories);
     Dashboard.setRecords(result.data.records);
+    Settings.setEmailPreference(result.data.emailNotificationsEnabled);
   } else {
     Auth.signOut();
     showView("login");
@@ -62,6 +63,7 @@ const Forms = (() => {
 
   function openAdd() {
     form.reset();
+    editingIsDone = false;
     document.getElementById("field-id").value = "";
     document.getElementById("form-title").textContent = "Add Reminder";
     showTodayHint();
@@ -69,8 +71,11 @@ const Forms = (() => {
     overlay.hidden = false;
   }
 
+  let editingIsDone = false; // preserved across save — see submit handler
+
   function openEdit(record) {
     form.reset();
+    editingIsDone = !!record.isDone;
     document.getElementById("field-id").value = record.id;
     document.getElementById("form-title").textContent = "Edit Reminder";
     document.getElementById("field-category").value = record.category;
@@ -117,7 +122,7 @@ const Forms = (() => {
     }
 
     close();
-    Dashboard.upsertLocal({
+    const savedRecord = {
       id: id || result.data.id,
       category: payload.category,
       title: payload.title,
@@ -125,9 +130,11 @@ const Forms = (() => {
       recurrenceInterval: payload.recurrenceInterval,
       amount: payload.amount,
       notes: payload.notes,
-      isDone: false,
+      isDone: id ? editingIsDone : false, // new records are never done; edits keep their existing status
       displayStatus: Dashboard.computeDisplayStatus(payload.dueDate),
-    });
+    };
+    Dashboard.upsertLocal(savedRecord);
+    Report.upsertLocal(savedRecord);
   });
 
   document.getElementById("btn-cancel-add").addEventListener("click", close);

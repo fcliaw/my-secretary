@@ -105,6 +105,11 @@ only when actually implemented **and** tested — see TEST_PLAN.md.
       Chrome); prerequisite for a future push-notification attempt
 - [x] Email due-date reminders (ADR-021) — daily trigger set up, manual
       test run confirmed an email was actually delivered
+- [x] Email on/off preference in Settings (ADR-022) — code written,
+      pending redeploy + live test
+- [x] Report screen: full reminder list (incl. Done, category filter) +
+      this month's activity from Logs (ADR-023) — code written, pending
+      redeploy + live test
 - [ ] True Web Push notifications (harder — no Apps Script crypto
       library; only attempt after Email is live and found insufficient)
 

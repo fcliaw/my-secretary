@@ -208,6 +208,24 @@ body {
   overflow-y: auto;
 }
 .modal-box h2 { margin: 0 0 16px; font-size: 1.1rem; }
+.modal-box-wide { max-width: 640px; }
+.report-filters { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+.report-filter {
+  padding: 8px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+.report-filters input.report-filter { flex: 1; min-width: 160px; }
+.report-table-wrap { overflow-x: auto; margin-bottom: 8px; }
+.report-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+.report-table th, .report-table td {
+  text-align: left;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--color-border);
+  white-space: nowrap;
+}
+.report-table th { color: var(--color-muted); font-weight: 600; }
 .today-hint { color: var(--color-muted); font-size: 0.8rem; font-style: italic; font-weight: normal; }
 .modal-box label {
   display: block;
@@ -226,7 +244,16 @@ body {
   font-family: inherit;
   color: var(--color-text);
 }
-.settings-subheading { font-size: 0.9rem; color: var(--color-muted); margin: 0 0 8px; }
+.settings-subheading { font-size: 0.9rem; color: var(--color-muted); margin: 16px 0 8px; }
+.settings-subheading:first-of-type { margin-top: 0; }
+.settings-checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+  color: var(--color-text);
+}
+.settings-checkbox-row input { width: auto; margin: 0; }
 .settings-category-list { list-style: none; margin: 0 0 16px; padding: 0; }
 .settings-category-list li {
   display: flex;

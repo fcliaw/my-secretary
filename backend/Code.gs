@@ -28,8 +28,10 @@ function handleRequest(request) {
         var spreadsheet = getOrCreateUserSpreadsheet(email);
         var records = readAllReminderRows(spreadsheet).map(toApiRecord);
         var categories = getCategories(spreadsheet);
+        var emailNotificationsEnabled = getEmailNotificationsEnabled(spreadsheet);
         return jsonResponse(successResponse({
           email: email, sheetId: spreadsheet.getId(), records: records, categories: categories,
+          emailNotificationsEnabled: emailNotificationsEnabled,
         }));
 
       case "getRecords":
@@ -58,6 +60,12 @@ function handleRequest(request) {
 
       case "deleteCategory":
         return jsonResponse(actionDeleteCategory(request.token, request.payload || {}));
+
+      case "getLogs":
+        return jsonResponse(actionGetLogs(request.token));
+
+      case "setEmailPreference":
+        return jsonResponse(actionSetEmailPreference(request.token, request.payload || {}));
 
       default:
         return jsonResponse(errorResponse("INVALID_REQUEST", "Unknown action: " + action));

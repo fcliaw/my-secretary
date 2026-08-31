@@ -297,3 +297,36 @@ request — runs only on its own schedule. The trigger itself must be
 created once, manually, in the Apps Script editor (Triggers → Add
 Trigger); this can't be set up from a deployment or from code without
 the project owner running it once interactively.
+
+### ADR-022
+**Decision:** Add a per-user on/off toggle for email reminders (default
+ON), stored as a simple key/value pair in the `Settings` sheet — columns
+C/D, alongside the Category list in columns A/B (not mixed into the same
+column).
+**Reason:**
+User should be able to turn off the daily email without needing to
+delete every reminder or ask for a code change. Default ON (not OFF)
+because reminders are the entire point of the app — someone who never
+opens Settings should still get them; opting out is a deliberate action,
+opting in by finding a hidden setting is not something to require.
+**Impact:** New `backend/SettingsService.gs`
+(get/setEmailNotificationsEnabled, generic get/setSetting for future
+keys); `Notifications.gs` checks the flag before sending; `authStatus`
+also returns `emailNotificationsEnabled`; new `setEmailPreference`
+action; Settings screen gained a checkbox (`docs/js/settings.js`).
+
+### ADR-023
+**Decision:** Add a Report screen: a full list of every reminder
+(including `Done` ones, which the Dashboard hides), filterable by
+category, plus a read-only "This Month's Activity" table built from the
+existing `Logs` sheet (Create/Update/Delete/Renew).
+**Reason:**
+Project owner wanted a way to see everything ever tracked, not just what's
+currently outstanding, and to review what actually happened in a given
+month — explicit user-facing scope, confirmed via AskUserQuestion before
+building.
+**Impact:** New `backend/ReportService.gs` (`getLogs` action — reuses
+`actionGetRecords` for the reminder half, since it already returns
+`Done` items unfiltered); new `docs/js/report.js` and a wide modal in
+`index.html`/`style.css`. "This month" is filtered client-side from all
+logs (personal-scale row counts, no need for a server-side date filter).

@@ -6,6 +6,13 @@ const Settings = (() => {
   const errorEl = document.getElementById("settings-error");
   const addForm = document.getElementById("add-category-form");
   const newCategoryInput = document.getElementById("field-new-category");
+  const emailCheckbox = document.getElementById("field-email-notifications");
+
+  let emailNotificationsEnabled = true; // set from authStatus at login — see setEmailPreference below
+
+  function setEmailPreference(enabled) {
+    emailNotificationsEnabled = enabled;
+  }
 
   function showError(message) {
     errorEl.textContent = message;
@@ -51,6 +58,7 @@ const Settings = (() => {
   function open() {
     clearError();
     renderList();
+    emailCheckbox.checked = emailNotificationsEnabled;
     overlay.hidden = false;
   }
 
@@ -101,8 +109,20 @@ const Settings = (() => {
     renderList();
   });
 
+  emailCheckbox.addEventListener("change", async () => {
+    const enabled = emailCheckbox.checked;
+    const result = await Api.call("setEmailPreference", { enabled });
+    if (!result.success) {
+      showError(result.message || "Unable to save that.");
+      emailCheckbox.checked = !enabled; // revert on failure
+      return;
+    }
+    clearError();
+    emailNotificationsEnabled = enabled;
+  });
+
   document.getElementById("btn-settings").addEventListener("click", open);
   document.getElementById("btn-close-settings").addEventListener("click", close);
 
-  return { open, close };
+  return { open, close, setEmailPreference };
 })();
