@@ -42,8 +42,10 @@ TBD
 - Unauthorized access: any request without a valid Google session is
   rejected before touching any Sheet, with an `AUTH_REQUIRED` error (see
   API.md).
-- Session handling: relies on Google's own session/token lifecycle: no app
-  is expected to build custom session storage in Phase 1.
+- Session handling: the Google identity token is cached in the browser's
+  `localStorage` so login survives closing the app (important on mobile/
+  PWA — see ADR-025), with a 30-minute inactivity auto-logout to keep
+  that safe.
 - Not logged in: user is shown only a Login screen; no app data, not even
   empty states, is rendered before authentication succeeds.
 

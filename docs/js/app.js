@@ -201,6 +201,16 @@ if (Auth.getStoredToken()) {
   showView("login");
 }
 
+// Auto-logout after 30 minutes of inactivity — checked periodically so
+// it also fires while the app stays open and idle, not just at the next
+// launch. Auth.getStoredToken() itself clears the token once idle-expired.
+setInterval(() => {
+  if (!views.dashboard.hidden && !Auth.getStoredToken()) {
+    showView("login");
+    showLoginError("You were signed out after 30 minutes of inactivity.");
+  }
+}, 60 * 1000);
+
 // PWA: registers the app shell cache (sw.js) so the site is installable
 // (Add to Home Screen) and opens even with no signal. Login/data always
 // still need a real connection — see sw.js.
