@@ -42,7 +42,32 @@ const Dashboard = (() => {
     document.getElementById("dashboard-filters").hidden =
       state === "loading" || state === "error" || (state === "empty" && allRecords.length === 0);
     document.getElementById("dashboard-toolbar").hidden = state === "loading" || state === "error";
+    document.getElementById("stat-tiles").hidden =
+      state === "loading" || state === "error" || allRecords.filter((r) => !r.isDone).length === 0;
   }
+
+  // Tile counts reflect ALL active (not-done) reminders, ignoring the
+  // current search/category filter — a stable "at a glance" total, not
+  // affected by what you happen to be searching for right now.
+  function updateStatTiles(activeRecords) {
+    const counts = { Overdue: 0, Today: 0, ThisWeek: 0, NextWeek: 0, ThisMonth: 0, Later: 0 };
+    activeRecords.forEach((r) => {
+      counts[r.displayStatus] = (counts[r.displayStatus] || 0) + 1;
+    });
+    document.getElementById("count-overdue").textContent = counts.Overdue;
+    document.getElementById("count-today").textContent = counts.Today;
+    document.getElementById("count-this-week").textContent = counts.ThisWeek;
+    document.getElementById("count-next-week").textContent = counts.NextWeek;
+    document.getElementById("count-this-month").textContent = counts.ThisMonth;
+    document.getElementById("count-later").textContent = counts.Later;
+  }
+
+  document.querySelectorAll(".stat-tile").forEach((tile) => {
+    tile.addEventListener("click", () => {
+      const target = document.getElementById(tile.dataset.target);
+      if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  });
 
   function formatMoney(amount) {
     if (amount === null || amount === undefined || amount === "") return "";
@@ -107,6 +132,7 @@ const Dashboard = (() => {
 
     // Completed one-off items are done — don't clutter the Dashboard with them.
     const active = allRecords.filter((r) => !r.isDone);
+    updateStatTiles(active);
 
     if (active.length === 0) {
       setState("empty");

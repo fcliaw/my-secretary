@@ -216,3 +216,18 @@ CSV parser that accepts category/recurrence labels with or without
 spaces/hyphens); `docs/js/app.js` wires the download/import buttons;
 `Dashboard.createMany` (`dashboard.js`) does the actual sequential
 `createRecord` calls.
+
+### ADR-018
+**Decision:** Add a row of 6 clickable stat tiles (Overdue/Today/This
+Week/Next Week/This Month/Later, each showing a count) above the
+Dashboard's item list. Clicking a tile scrolls to that group below —
+tiles are a summary, not a replacement for the detailed list. Counts
+reflect all active (not-done) reminders regardless of the current search/
+category filter.
+**Reason:**
+Project owner wanted an at-a-glance numeric summary matching the 6
+buckets already defined in ADR-015, on top of (not instead of) the
+existing detailed cards — confirmed via AskUserQuestion before building.
+**Impact:** `index.html` (`#stat-tiles`), `style.css` (`.stat-tile` +
+per-bucket colors), `dashboard.js` (`updateStatTiles`, called from
+`applyFiltersAndRender` using the unfiltered active list).

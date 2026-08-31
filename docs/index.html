@@ -53,6 +53,33 @@
           <span id="import-status" class="import-status" hidden></span>
         </div>
 
+        <div id="stat-tiles" class="stat-tiles" hidden>
+          <button type="button" class="stat-tile stat-overdue" data-target="list-overdue">
+            <span class="stat-label">Overdue</span>
+            <span class="stat-count" id="count-overdue">0</span>
+          </button>
+          <button type="button" class="stat-tile stat-today" data-target="list-today">
+            <span class="stat-label">Today</span>
+            <span class="stat-count" id="count-today">0</span>
+          </button>
+          <button type="button" class="stat-tile stat-this-week" data-target="list-this-week">
+            <span class="stat-label">This Week</span>
+            <span class="stat-count" id="count-this-week">0</span>
+          </button>
+          <button type="button" class="stat-tile stat-next-week" data-target="list-next-week">
+            <span class="stat-label">Next Week</span>
+            <span class="stat-count" id="count-next-week">0</span>
+          </button>
+          <button type="button" class="stat-tile stat-this-month" data-target="list-this-month">
+            <span class="stat-label">This Month</span>
+            <span class="stat-count" id="count-this-month">0</span>
+          </button>
+          <button type="button" class="stat-tile stat-later" data-target="list-later">
+            <span class="stat-label">Later</span>
+            <span class="stat-count" id="count-later">0</span>
+          </button>
+        </div>
+
         <div id="dashboard-loading" class="state-loading">Loading...</div>
         <div id="dashboard-error" class="state-error" hidden></div>
         <div id="dashboard-empty" class="state-empty" hidden>

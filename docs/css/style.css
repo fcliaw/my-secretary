@@ -112,6 +112,38 @@ body {
   .login-box { margin-top: 10vh; }
 }
 
+/* Stat tiles */
+.stat-tiles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.stat-tiles[hidden] { display: none; }
+.stat-tile {
+  border: none;
+  border-radius: 12px;
+  padding: 16px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  font-family: inherit;
+}
+.stat-label { font-size: 0.85rem; font-weight: 600; }
+.stat-count { font-size: 2rem; font-weight: 700; line-height: 1; }
+.stat-overdue { background: #fecaca; color: #7f1d1d; }
+.stat-today { background: #fed7aa; color: #7c2d12; }
+.stat-this-week { background: #fde68a; color: #78350f; }
+.stat-next-week { background: #bfdbfe; color: #1e3a8a; }
+.stat-this-month { background: #bbf7d0; color: #14532d; }
+.stat-later { background: #e5e7eb; color: #374151; }
+
+@media (max-width: 480px) {
+  .stat-tiles { grid-template-columns: repeat(2, 1fr); }
+}
+
 /* Filters */
 .filters {
   display: flex;
