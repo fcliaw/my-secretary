@@ -187,3 +187,14 @@ if (Auth.getStoredToken()) {
 } else {
   showView("login");
 }
+
+// PWA: registers the app shell cache (sw.js) so the site is installable
+// (Add to Home Screen) and opens even with no signal. Login/data always
+// still need a real connection — see sw.js.
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js").catch((err) => {
+      console.error("Service worker registration failed:", err);
+    });
+  });
+}

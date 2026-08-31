@@ -262,3 +262,21 @@ wires 4 new actions and `authStatus` also returns `categories`;
 elements (Add/Edit form, filter, CSV import) are now populated from the
 server's live list instead of hardcoded `<option>`s — see follow-up
 frontend commit.
+
+### ADR-020
+**Decision:** Turn the frontend into an installable PWA (Web App
+Manifest + a Service Worker caching the static app shell), as the
+groundwork for eventual push notifications — but this ADR covers
+installability only, not push itself.
+**Reason:**
+Project owner wants the app to feel more like a native app on their
+phone (home-screen icon, opens without the browser chrome). A Service
+Worker is also a hard technical prerequisite for the Push API, so this
+is a deliberate first step before attempting notifications (Email first,
+per the earlier discussion — see ROADMAP.md Phase 2).
+**Impact:** New `docs/manifest.json`, `docs/sw.js`, `docs/icons/` (192px/
+512px PNGs generated locally, not hand-designed — placeholder branding);
+`index.html` links the manifest + registers the service worker. The
+service worker only caches same-origin static files (HTML/CSS/JS/icons)
+cache-first-with-network-update; it never intercepts calls to Apps
+Script or Google's domains, so login and data are always live.
