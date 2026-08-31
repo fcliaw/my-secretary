@@ -113,11 +113,12 @@ Error:
   "amount": 10000,
   "notes": "",
   "isDone": false,
-  "displayStatus": "DueSoon"
+  "displayStatus": "ThisWeek"
 }
 ```
-`displayStatus` is one of `Overdue`, `DueSoon` (due within 7 days), or
-`Upcoming`.
+`displayStatus` is one of (see ADR-015): `Overdue`, `Today`, `ThisWeek`
+(due in 1-7 days), `NextWeek` (8-14 days), `ThisMonth` (15-30 days), or
+`Later` (30+ days).
 
 ## 5.5 Error Codes
 

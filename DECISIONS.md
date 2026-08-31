@@ -167,3 +167,52 @@ records; frontend `app.js` calls `Dashboard.setRecords(...)` directly
 instead of `Dashboard.load()` after a successful `authStatus`. The
 standalone `getRecords` action still exists (used nowhere currently, kept
 for API completeness / potential future manual-refresh button).
+
+### ADR-015
+**Decision:** Replace the 3-bucket Dashboard grouping (Overdue / Due Soon
+within 7 days / Upcoming, ADR-007) with 6 buckets: Overdue, Today, This
+Week (1-7 days), Next Week (8-14 days), This Month (15-30 days), Later
+(30+ days) — all as a rolling day-count from today, not calendar-week
+boundaries.
+**Reason:**
+The project owner wanted finer-grained urgency signal than a single
+"Due Soon" bucket. Rolling day-count windows (vs. real calendar
+week/month boundaries) were chosen to keep the logic simple and avoid
+edge cases like "This Week" being nearly empty on a Sunday.
+**Impact:** `Api.gs` and `dashboard.js` both reimplement
+`computeDisplayStatus` (kept in sync per ADR-013's existing duplication
+tradeoff); `API.md`, `DATA_STRUCTURE.md`, `UI_STRUCTURE.md` updated;
+HTML/CSS gained 3 more group sections/colors.
+
+### ADR-016
+**Decision:** Reminder amounts are masked (`RM ••••`) by default on every
+page load; a single eye-icon toggle in the top bar reveals/hides them for
+all items at once (not per-item).
+**Reason:**
+The project owner wanted to avoid someone standing nearby seeing dollar
+amounts immediately after login. A single global toggle (not stored
+anywhere, resets to masked on every reload) is simplest and matches the
+actual concern — a passive glance, not a determined attacker.
+**Impact:** `dashboard.js` `formatMoney` checks a module-level
+`amountsVisible` flag; no backend change — the backend still returns real
+amounts, masking is purely a display concern.
+
+### ADR-017
+**Decision:** Bulk import uses a downloadable CSV template (with one
+example row per Category, demonstrating valid values) rather than parsing
+an arbitrary existing Excel file, and rather than a real `.xlsx` binary
+format.
+**Reason:**
+CSV can be generated and parsed with plain JavaScript — no external
+library needed (PROJECT_RULES.md: avoid unnecessary dependencies), and
+both Excel and Google Sheets open/save CSV natively. An early version put
+usage instructions in extra comment rows / long header text, but this
+confused Excel's delimiter auto-detection when opened by double-click
+(inconsistent column counts per row) — real, directly-importable example
+rows turned out to be both clearer for the user and safer for Excel to
+parse.
+**Impact:** `docs/js/importExport.js` (template generation + a lenient
+CSV parser that accepts category/recurrence labels with or without
+spaces/hyphens); `docs/js/app.js` wires the download/import buttons;
+`Dashboard.createMany` (`dashboard.js`) does the actual sequential
+`createRecord` calls.

@@ -7,7 +7,6 @@ var VALID_CATEGORIES = [
   "FixedDeposit", "SchoolFee", "Insurance", "License", "Subscription", "Other",
 ];
 var VALID_RECURRENCE = ["None", "Monthly", "Quarterly", "Yearly"];
-var DUE_SOON_DAYS = 7;
 
 function apiError(code, message) {
   throw { code: code, message: message };
@@ -53,6 +52,9 @@ function findRowById(spreadsheet, id) {
   return null;
 }
 
+/** See ADR-015 — Overdue / Today / ThisWeek (1-7d) / NextWeek (8-14d) /
+ *  ThisMonth (15-30d) / Later (30d+), all as rolling day-count windows
+ *  from today (not calendar-week boundaries, to keep this simple). */
 function computeDisplayStatus(dueDate) {
   var today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -62,8 +64,11 @@ function computeDisplayStatus(dueDate) {
   var diffDays = Math.round((due - today) / (1000 * 60 * 60 * 24));
 
   if (diffDays < 0) return "Overdue";
-  if (diffDays <= DUE_SOON_DAYS) return "DueSoon";
-  return "Upcoming";
+  if (diffDays === 0) return "Today";
+  if (diffDays <= 7) return "ThisWeek";
+  if (diffDays <= 14) return "NextWeek";
+  if (diffDays <= 30) return "ThisMonth";
+  return "Later";
 }
 
 function toApiRecord(row) {

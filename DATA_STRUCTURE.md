@@ -71,11 +71,11 @@ for troubleshooting — not a full audit system.
 - **Optional fields:** may be blank; blank is stored as an empty cell, not
   a placeholder string like `"N/A"`.
 - **Status is a calculated display value, not stored data.** Only
-  `IsDone` is stored (true/false). `Overdue` vs. `Due Soon` vs. `Upcoming`
-  is computed on read — every time the app loads — by comparing today's
-  date to `DueDate`. This avoids the stored value ever going stale
-  relative to the real due date. "Due Soon" = due within **7 days**
-  (inclusive) of today and not yet overdue. A recurring item's `IsDone` is
+  `IsDone` is stored (true/false). The display bucket (`Overdue` / `Today`
+  / `ThisWeek` / `NextWeek` / `ThisMonth` / `Later` — ADR-015) is computed
+  on read — every time the app loads — by comparing today's date to
+  `DueDate` as a rolling day-count from today. This avoids the stored
+  value ever going stale relative to the real due date. A recurring item's `IsDone` is
   irrelevant to its display grouping — completing a renewal just advances
   `DueDate` and the display recalculates from there.
 - **Duplicate handling:** no automatic duplicate detection in Phase 1 —

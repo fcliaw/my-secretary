@@ -24,7 +24,10 @@
     <section id="view-dashboard" class="view" hidden>
       <header class="topbar">
         <h1>My Secretary</h1>
-        <button id="btn-logout" class="btn btn-link">Logout</button>
+        <div class="topbar-actions">
+          <button id="btn-toggle-amounts" class="btn btn-icon" title="Show amounts" aria-label="Show amounts">🙈</button>
+          <button id="btn-logout" class="btn btn-link">Logout</button>
+        </div>
       </header>
 
       <main class="dashboard">
@@ -41,6 +44,15 @@
           </select>
         </div>
 
+        <div id="dashboard-toolbar" class="toolbar" hidden>
+          <button id="btn-download-template" class="btn btn-link">Download Import Template</button>
+          <label class="btn btn-link" style="cursor:pointer;">
+            Import from File
+            <input id="input-import-file" type="file" accept=".csv" hidden />
+          </label>
+          <span id="import-status" class="import-status" hidden></span>
+        </div>
+
         <div id="dashboard-loading" class="state-loading">Loading...</div>
         <div id="dashboard-error" class="state-error" hidden></div>
         <div id="dashboard-empty" class="state-empty" hidden>
@@ -55,13 +67,25 @@
             <h2>Overdue</h2>
             <ul id="list-overdue" class="reminder-list"></ul>
           </section>
-          <section class="group group-due-soon">
-            <h2>Due Soon</h2>
-            <ul id="list-due-soon" class="reminder-list"></ul>
+          <section class="group group-today">
+            <h2>Today</h2>
+            <ul id="list-today" class="reminder-list"></ul>
           </section>
-          <section class="group group-upcoming">
-            <h2>Upcoming</h2>
-            <ul id="list-upcoming" class="reminder-list"></ul>
+          <section class="group group-this-week">
+            <h2>This Week</h2>
+            <ul id="list-this-week" class="reminder-list"></ul>
+          </section>
+          <section class="group group-next-week">
+            <h2>Next Week</h2>
+            <ul id="list-next-week" class="reminder-list"></ul>
+          </section>
+          <section class="group group-this-month">
+            <h2>This Month</h2>
+            <ul id="list-this-month" class="reminder-list"></ul>
+          </section>
+          <section class="group group-later">
+            <h2>Later</h2>
+            <ul id="list-later" class="reminder-list"></ul>
           </section>
         </div>
       </main>
@@ -93,7 +117,7 @@
         </label>
 
         <label>
-          Due Date
+          Due Date <span id="today-hint" class="today-hint"></span>
           <input id="field-due-date" type="date" required />
         </label>
 
@@ -131,6 +155,7 @@
   <script src="js/auth.js"></script>
   <script src="js/api.js"></script>
   <script src="js/dashboard.js"></script>
+  <script src="js/importExport.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

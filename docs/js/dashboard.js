@@ -1,17 +1,23 @@
 // My Secretary — Dashboard data loading + reminder actions
 
 const Dashboard = (() => {
+  const GROUP_KEYS = ["Overdue", "Today", "ThisWeek", "NextWeek", "ThisMonth", "Later"];
   const groupLists = {
     Overdue: document.getElementById("list-overdue"),
-    DueSoon: document.getElementById("list-due-soon"),
-    Upcoming: document.getElementById("list-upcoming"),
+    Today: document.getElementById("list-today"),
+    ThisWeek: document.getElementById("list-this-week"),
+    NextWeek: document.getElementById("list-next-week"),
+    ThisMonth: document.getElementById("list-this-month"),
+    Later: document.getElementById("list-later"),
   };
   const searchInput = document.getElementById("filter-search");
   const categorySelect = document.getElementById("filter-category");
 
   let allRecords = []; // last loaded from the server, unfiltered
-  const DUE_SOON_DAYS = 7; // must match backend Api.gs DUE_SOON_DAYS (ADR-007)
+  let amountsVisible = false; // masked by default on every load — privacy (see item 5)
 
+  // Must match backend Api.gs computeDisplayStatus (see ADR-013 for why
+  // this is duplicated, and ADR-015 for why these particular buckets).
   function computeDisplayStatus(dueDate) {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -19,8 +25,11 @@ const Dashboard = (() => {
     due.setHours(0, 0, 0, 0);
     const diffDays = Math.round((due - today) / (1000 * 60 * 60 * 24));
     if (diffDays < 0) return "Overdue";
-    if (diffDays <= DUE_SOON_DAYS) return "DueSoon";
-    return "Upcoming";
+    if (diffDays === 0) return "Today";
+    if (diffDays <= 7) return "ThisWeek";
+    if (diffDays <= 14) return "NextWeek";
+    if (diffDays <= 30) return "ThisMonth";
+    return "Later";
   }
 
   function setState(state) {
@@ -32,13 +41,21 @@ const Dashboard = (() => {
     document.getElementById("btn-add").hidden = state === "loading";
     document.getElementById("dashboard-filters").hidden =
       state === "loading" || state === "error" || (state === "empty" && allRecords.length === 0);
+    document.getElementById("dashboard-toolbar").hidden = state === "loading" || state === "error";
   }
 
   function formatMoney(amount) {
-    return amount === null || amount === undefined || amount === ""
-      ? ""
-      : ` — RM ${Number(amount).toFixed(2)}`;
+    if (amount === null || amount === undefined || amount === "") return "";
+    return amountsVisible ? ` — RM ${Number(amount).toFixed(2)}` : ` — RM ••••`;
   }
+
+  const toggleAmountsBtn = document.getElementById("btn-toggle-amounts");
+  toggleAmountsBtn.addEventListener("click", () => {
+    amountsVisible = !amountsVisible;
+    toggleAmountsBtn.textContent = amountsVisible ? "👁️" : "🙈";
+    toggleAmountsBtn.title = amountsVisible ? "Hide amounts" : "Show amounts";
+    applyFiltersAndRender();
+  });
 
   function renderItem(record) {
     const li = document.createElement("li");
@@ -114,12 +131,12 @@ const Dashboard = (() => {
     filtered
       .sort((a, b) => a.dueDate.localeCompare(b.dueDate))
       .forEach((record) => {
-        const list = groupLists[record.displayStatus] || groupLists.Upcoming;
+        const list = groupLists[record.displayStatus] || groupLists.Later;
         list.appendChild(renderItem(record));
       });
 
     document.querySelectorAll(".group").forEach((group, i) => {
-      const key = ["Overdue", "DueSoon", "Upcoming"][i];
+      const key = GROUP_KEYS[i];
       group.hidden = groupLists[key].children.length === 0;
     });
 
@@ -201,8 +218,35 @@ const Dashboard = (() => {
     removeLocal(id);
   }
 
+  // Sequential create — used by CSV import (item 3). Sequential (not
+  // parallel) so one failure's error message is still attributable to a
+  // specific row, and so we don't hammer Apps Script with a burst of
+  // simultaneous requests.
+  async function createMany(rows) {
+    let successCount = 0;
+    const errors = [];
+
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i];
+      const result = await Api.call("createRecord", row);
+      if (result.success) {
+        successCount++;
+        upsertLocal({
+          id: result.data.id,
+          ...row,
+          isDone: false,
+          displayStatus: computeDisplayStatus(row.dueDate),
+        });
+      } else {
+        errors.push(`Row ${i + 2}: ${result.message || "failed"}`); // +2: header row + 1-index
+      }
+    }
+
+    return { successCount, errors };
+  }
+
   searchInput.addEventListener("input", applyFiltersAndRender);
   categorySelect.addEventListener("change", applyFiltersAndRender);
 
-  return { load, setRecords, upsertLocal, removeLocal, computeDisplayStatus };
+  return { load, setRecords, upsertLocal, removeLocal, computeDisplayStatus, createMany };
 })();

@@ -29,8 +29,8 @@ only when actually implemented **and** tested — see TEST_PLAN.md.
       verified: multiple logout/login cycles, no duplicate Sheet created
 
 ## Stage 4 — Apps Script API
-- [x] `getRecords` — includes computed Overdue/DueSoon/Upcoming (ADR-007,
-      7-day DueSoon window)
+- [x] `getRecords` — includes computed display bucket (ADR-007, revised
+      by ADR-015 into 6 buckets)
 - [x] `createRecord` with backend validation
 - [x] `updateRecord` (ownership is implicit — file-level isolation, ADR-005)
 - [x] `deleteRecord` (ownership is implicit — file-level isolation, ADR-005)
@@ -49,9 +49,12 @@ only when actually implemented **and** tested — see TEST_PLAN.md.
 - [x] Shared loading / empty / error state components — verified live
 
 ## Stage 6 — Dashboard
-- [x] Fetch + group items (Overdue / DueSoon / Upcoming) — `dashboard.js`,
-      verified live with a real recurring item
+- [x] Fetch + group items (Overdue / Today / This Week / Next Week / This
+      Month / Later — ADR-015, revised from the original 3-bucket
+      design) — `dashboard.js`, verified live with real data
 - [x] Quick-add entry point — `+ Add Reminder` button
+- [x] Amount masking with a global show/hide toggle (ADR-016) — verified live
+- [x] CSV import template download + import (ADR-017) — verified live
 
 ## Stage 7 — CRUD Functions
 - [x] ~~Reminder List (standalone page)~~ — intentionally dropped, see
@@ -92,7 +95,7 @@ only when actually implemented **and** tested — see TEST_PLAN.md.
       to Authorized JavaScript origins
 - [x] Production smoke test — verified live on the real production URL
       (not localhost): login succeeded, real reminder data loaded,
-      correctly grouped into Overdue/Due Soon/Upcoming
+      correctly grouped by due date
 
 ## Testing (run alongside each stage, per TEST_PLAN.md)
 - [ ] Authentication tests

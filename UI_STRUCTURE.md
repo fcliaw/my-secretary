@@ -29,10 +29,11 @@ planned but merged into the Dashboard as built — see ADR-012.
   "Reminder List" page.
 - **User type:** authenticated Normal User.
 - **Main components:** search box (matches title or notes) + category
-  filter (Stage 9), "Overdue" /
-  "Due Soon" / "Upcoming" groups (visually distinct), quick-add button,
-  and per-item actions (Edit, Delete, Renewed or Mark as Done) inline on
-  each card.
+  filter (Stage 9); an amount-visibility toggle (masked by default —
+  privacy, ADR-016) in the top bar; "Overdue" / "Today" / "This Week" /
+  "Next Week" / "This Month" / "Later" groups (visually distinct,
+  ADR-015), quick-add button, and per-item actions (Edit, Delete, Renewed
+  or Mark as Done) inline on each card.
 - **Main actions:** search by title, filter by category, edit an item,
   delete it, mark it renewed/done, add a new item — all in one click each,
   no drill-down page required.
@@ -64,7 +65,8 @@ planned but merged into the Dashboard as built — see ADR-012.
 ```text
 Login
   ↓
-Dashboard (Overdue / Due Soon / Upcoming, all items, inline actions)
+Dashboard (Overdue / Today / This Week / Next Week / This Month / Later,
+           all items, inline actions)
   ├── + Add Reminder → Add/Edit Form (modal)
   ├── Edit (per item) → Add/Edit Form (modal, pre-filled)
   ├── Delete (per item, with confirmation)

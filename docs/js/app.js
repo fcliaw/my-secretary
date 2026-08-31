@@ -51,10 +51,19 @@ const Forms = (() => {
   const errorEl = document.getElementById("add-form-error");
   const submitBtn = form.querySelector('button[type="submit"]');
 
+  function showTodayHint() {
+    const today = new Date();
+    const mm = String(today.getMonth() + 1).padStart(2, "0");
+    const dd = String(today.getDate()).padStart(2, "0");
+    const yyyy = today.getFullYear();
+    document.getElementById("today-hint").textContent = `(Today: ${mm}/${dd}/${yyyy})`;
+  }
+
   function openAdd() {
     form.reset();
     document.getElementById("field-id").value = "";
     document.getElementById("form-title").textContent = "Add Reminder";
+    showTodayHint();
     errorEl.hidden = true;
     overlay.hidden = false;
   }
@@ -69,6 +78,7 @@ const Forms = (() => {
     document.getElementById("field-recurrence").value = record.recurrenceInterval || "None";
     document.getElementById("field-amount").value = record.amount ?? "";
     document.getElementById("field-notes").value = record.notes || "";
+    showTodayHint();
     errorEl.hidden = true;
     overlay.hidden = false;
   }
@@ -124,6 +134,47 @@ const Forms = (() => {
 
   return { openAdd, openEdit, close };
 })();
+
+// --- Import from CSV ---
+
+document.getElementById("btn-download-template").addEventListener("click", () => {
+  ImportExport.downloadTemplate();
+});
+
+document.getElementById("input-import-file").addEventListener("change", async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const statusEl = document.getElementById("import-status");
+  statusEl.hidden = false;
+  statusEl.className = "import-status";
+  statusEl.textContent = "Importing...";
+
+  const text = await ImportExport.readFileAsText(file);
+  const { rows, errors: parseErrors } = ImportExport.parseCsv(text);
+
+  if (rows.length === 0) {
+    statusEl.className = "import-status import-error";
+    statusEl.textContent = parseErrors.length
+      ? `Nothing imported: ${parseErrors.join("; ")}`
+      : "Nothing to import.";
+    e.target.value = "";
+    return;
+  }
+
+  const { successCount, errors: saveErrors } = await Dashboard.createMany(rows);
+  const allErrors = [...parseErrors, ...saveErrors];
+
+  if (allErrors.length === 0) {
+    statusEl.className = "import-status";
+    statusEl.textContent = `Imported ${successCount} reminder(s).`;
+  } else {
+    statusEl.className = "import-status import-error";
+    statusEl.textContent = `Imported ${successCount}, ${allErrors.length} skipped: ${allErrors.join("; ")}`;
+  }
+
+  e.target.value = ""; // allow re-selecting the same file later
+});
 
 Auth.init(handleSignIn);
 
