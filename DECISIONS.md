@@ -350,3 +350,20 @@ calendar-month log filter) keeps its name — it genuinely means the
 calendar month, so it stays as-is.
 **Impact:** `index.html`, `docs/js/report.js`, `UI_STRUCTURE.md` — label
 text only, no logic change.
+
+### ADR-025
+**Decision:** Switch the stored Google ID token from `sessionStorage` to
+`localStorage`, and add a 30-minute inactivity auto-logout to keep that
+change safe.
+**Reason:**
+On mobile (especially the installed PWA), the OS back button can fully
+terminate the app rather than just backgrounding it — `sessionStorage`
+is cleared when that happens, forcing a fresh login every time. Project
+owner wanted login to survive that, but not indefinitely, so a 30-minute
+idle timeout was added: activity (click/keydown/touch/scroll) resets a
+timestamp in `localStorage`; both a periodic check (every 60s, while the
+app is open) and the check at next launch treat a stale timestamp as an
+expired session and force logout.
+**Impact:** `docs/js/auth.js` (storage swapped to `localStorage`,
+`touchActivity`/`isIdleExpired`, activity listeners); `docs/js/app.js`
+adds the periodic idle check while the Dashboard is open.
