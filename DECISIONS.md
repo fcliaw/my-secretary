@@ -280,3 +280,20 @@ per the earlier discussion — see ROADMAP.md Phase 2).
 service worker only caches same-origin static files (HTML/CSS/JS/icons)
 cache-first-with-network-update; it never intercepts calls to Apps
 Script or Google's domains, so login and data are always live.
+
+### ADR-021
+**Decision:** Daily email reminders (ROADMAP.md Phase 2) via a
+time-driven Apps Script trigger calling `sendDueReminderEmails`, using
+`MailApp` — not Web Push. Email only covers "Overdue" and "Today" items
+(not the full week), so the email stays short and doesn't repeat the
+same items every day.
+**Reason:**
+Chosen over Web Push per the earlier discussion (see chat): Web Push
+needs manual encryption work Apps Script has no library for, while
+`MailApp` is a one-line native call. Loops over every `SHEET_ID_*`
+Script Property so it scales to more than one user without change.
+**Impact:** New `backend/Notifications.gs`. Not wired to any web
+request — runs only on its own schedule. The trigger itself must be
+created once, manually, in the Apps Script editor (Triggers → Add
+Trigger); this can't be set up from a deployment or from code without
+the project owner running it once interactively.

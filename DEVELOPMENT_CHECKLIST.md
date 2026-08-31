@@ -103,8 +103,8 @@ only when actually implemented **and** tested — see TEST_PLAN.md.
 - [x] PWA installability — manifest + Service Worker caching the app
       shell (ADR-020) — verified live (install icon appeared in desktop
       Chrome); prerequisite for a future push-notification attempt
-- [ ] Email due-date reminders (ROADMAP.md Phase 2, simpler alternative
-      to true push notifications — see chat discussion)
+- [x] Email due-date reminders (ADR-021) — daily trigger set up, manual
+      test run confirmed an email was actually delivered
 - [ ] True Web Push notifications (harder — no Apps Script crypto
       library; only attempt after Email is live and found insufficient)
 
