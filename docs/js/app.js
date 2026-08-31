@@ -53,12 +53,17 @@ const Forms = (() => {
   const errorEl = document.getElementById("add-form-error");
   const submitBtn = form.querySelector('button[type="submit"]');
 
-  function showTodayHint() {
+  function todayParts() {
     const today = new Date();
     const mm = String(today.getMonth() + 1).padStart(2, "0");
     const dd = String(today.getDate()).padStart(2, "0");
     const yyyy = today.getFullYear();
-    document.getElementById("today-hint").textContent = `(Today: ${mm}/${dd}/${yyyy})`;
+    return { mm, dd, yyyy, iso: `${yyyy}-${mm}-${dd}` };
+  }
+
+  function showTodayHint() {
+    const { dd, mm, yyyy } = todayParts();
+    document.getElementById("today-hint").textContent = `(Today: ${dd}/${mm}/${yyyy})`;
   }
 
   function openAdd() {
@@ -66,6 +71,7 @@ const Forms = (() => {
     editingIsDone = false;
     document.getElementById("field-id").value = "";
     document.getElementById("form-title").textContent = "Add Reminder";
+    document.getElementById("field-due-date").value = todayParts().iso;
     showTodayHint();
     errorEl.hidden = true;
     overlay.hidden = false;

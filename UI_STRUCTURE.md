@@ -30,8 +30,8 @@ planned but merged into the Dashboard as built — see ADR-012.
 - **User type:** authenticated Normal User.
 - **Main components:** search box (matches title or notes) + category
   filter (Stage 9); an amount-visibility toggle (masked by default —
-  privacy, ADR-016) in the top bar; "Overdue" / "Today" / "This Week" /
-  "Next Week" / "Within 30 Days" / "Later" groups (visually distinct,
+  privacy, ADR-016) in the top bar; "Overdue" / "Today" / "Within 7 Days" /
+  "Within 14 Days" / "Within 30 Days" / "Later" groups (visually distinct,
   ADR-015), quick-add button, and per-item actions (Edit, Delete, Renewed
   or Mark as Done) inline on each card.
 - **Main actions:** search by title, filter by category, edit an item,
@@ -65,7 +65,7 @@ planned but merged into the Dashboard as built — see ADR-012.
 ```text
 Login
   ↓
-Dashboard (Overdue / Today / This Week / Next Week / Within 30 Days / Later,
+Dashboard (Overdue / Today / Within 7 Days / Within 14 Days / Within 30 Days / Later,
            all items, inline actions)
   ├── + Add Reminder → Add/Edit Form (modal)
   ├── Edit (per item) → Add/Edit Form (modal, pre-filled)

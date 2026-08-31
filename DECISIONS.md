@@ -332,19 +332,21 @@ building.
 logs (personal-scale row counts, no need for a server-side date filter).
 
 ### ADR-024
-**Decision:** Rename the Dashboard/Report display bucket labeled "This
-Month" (ADR-015 — 15-30 days from today, a rolling window) to "Within 30
-Days". The internal code name stays `ThisMonth` (`Api.gs`/`dashboard.js`
-`computeDisplayStatus`, `GROUP_KEYS`) — only the user-facing label
-changed, since the underlying 15-30-day rule (ADR-015) isn't changing.
+**Decision:** Rename the Dashboard/Report display bucket labels to match
+the "Within N Days" pattern consistently: "This Week" → "Within 7 Days",
+"Next Week" → "Within 14 Days", "This Month" → "Within 30 Days"
+(ADR-015's rolling day-count windows are unchanged — 1-7 / 8-14 / 15-30
+days from today). Internal code names stay `ThisWeek`/`NextWeek`/
+`ThisMonth` (`Api.gs`/`dashboard.js` `computeDisplayStatus`, `GROUP_KEYS`)
+— only the user-facing labels changed.
 **Reason:**
-Project owner found an item due 15 days out, in the next calendar month,
-sitting in "This Month" — a real bucket-boundary case that exposed the
-label as misleading: it reads as "the current calendar month" but is
-actually a rolling day-count window, unrelated to calendar-month
-boundaries. Renaming the visible label (not the bucket rule) removes the
-confusion cheaply and doesn't touch ADR-015's math. Report's unrelated
-"This Month's Activity" (the real calendar-month log filter) keeps its
-name — it genuinely means the calendar month.
+Started as a fix for just "This Month" (an item due 15 days out, in the
+next calendar month, sitting in a bucket named "This Month" — misleading,
+since it's a rolling window, not a calendar-month boundary). Project
+owner then asked for the other two labels to match, so all three read
+the same way and none of them implies a calendar boundary they don't
+actually have. Report's separate "This Month's Activity" (the real
+calendar-month log filter) keeps its name — it genuinely means the
+calendar month, so it stays as-is.
 **Impact:** `index.html`, `docs/js/report.js`, `UI_STRUCTURE.md` — label
 text only, no logic change.

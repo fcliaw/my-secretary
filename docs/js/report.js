@@ -13,8 +13,8 @@ const Report = (() => {
   let allRecords = []; // includes Done items, unlike the Dashboard
 
   const STATUS_LABELS = {
-    Overdue: "Overdue", Today: "Today", ThisWeek: "This Week",
-    NextWeek: "Next Week", ThisMonth: "Within 30 Days", Later: "Later",
+    Overdue: "Overdue", Today: "Today", ThisWeek: "Within 7 Days",
+    NextWeek: "Within 14 Days", ThisMonth: "Within 30 Days", Later: "Later",
   };
 
   function renderCategoryFilterOptions() {
